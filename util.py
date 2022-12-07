@@ -1,6 +1,6 @@
 import math
 import typing
-from random import random
+import random
 
 
 class City(object):
@@ -25,8 +25,8 @@ class Tour(object):
         # returns cost of city[0].distTo(city[1]) + city[1].distTo(city[2]) + … city[-1].distTo(city[0])
         res = 0
         for i in range(len(self.cities) - 1):
-            res += self.city[i].distTo(self.city[i + 1])
-        return res * 2
+            res += self.cities[i].distTo(self.cities[i + 1])
+        return res + self.cities[-1].distTo(self.cities[0])
 
     def twoOpt(self) -> None:
         idx1 = random.randint(0, len(self.cities))
@@ -42,3 +42,19 @@ class Tour(object):
         for i in idx:
             route.append(self.cities[i])
         self.cities = route
+
+
+def generateCities(num) -> typing.List[City]:
+    cities = []
+    created = set()
+    for i in range(num):
+        # create different cities
+        while 1:
+            x = random.randint(0, num * 2)
+            y = random.randint(0, num * 2)
+            if (x, y) not in created:
+                break
+        c = City(x, y)
+        created.add((x, y))
+        cities.append(c)
+    return cities

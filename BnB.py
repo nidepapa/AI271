@@ -1,5 +1,6 @@
 import copy
 import heapq
+import time
 from typing import List
 
 # the dimension of matrix
@@ -31,7 +32,7 @@ class Node:
         else:
             return False
 
-    def colReduction(self) -> List[int]:
+    def colReduction(self) -> List[float]:
         col = [float("inf")] * N
         # get the min of each col
         for i in range(N):
@@ -45,7 +46,7 @@ class Node:
                     self.reducedMatrix[i][j] -= col[j]
         return col
 
-    def rowReduction(self) -> List[int]:
+    def rowReduction(self) -> List[float]:
         row = [float("inf")] * N
         # get the min of each row
         for i in range(N):
@@ -59,7 +60,7 @@ class Node:
                     self.reducedMatrix[i][j] -= row[i]
         return row
 
-    def calculateCost(self) -> int:
+    def calculateCost(self) -> float:
         cost = 0
         row = self.rowReduction()
         col = self.colReduction()
@@ -77,29 +78,27 @@ def generateMatrix(cities: List[util.City]) -> List[List[int]]:
     return matrix
 
 
-def BnB_DFS_TSP(cities) -> util.Tour:
+def BnB_DFS_TSP(matrix):
     global N
-    N = len(cities)
+    N = len(matrix)
+    expandingNum = -1
 
-    tour = util.Tour(cities)
-    costMatrix = generateMatrix(cities)
     #[node]
     heap = []
     path = [0]
-    root = Node(costMatrix, path, 0, -1, 0)
+    root = Node(matrix, path, 0, -1, 0)
     root.cost = root.calculateCost()
 
     heapq.heappush(heap, root)
 
     while heap:
+        expandingNum += 1
         minNode = heapq.heappop(heap)
 
         i = minNode.number
         # if all cities are visited
         if minNode.level == N - 1:
-            print(minNode.path)
-            tour.translate(minNode.path)
-            return tour
+            return minNode.cost, expandingNum
 
         for j in range(N):
             if minNode.reducedMatrix[i][j] != float("inf"):
@@ -109,7 +108,4 @@ def BnB_DFS_TSP(cities) -> util.Tour:
                 heapq.heappush(heap, child)
 
 
-if __name__ == "__main__":
-    cities = util.generateCities(5)
-    print(BnB_DFS_TSP(cities).cost())
 

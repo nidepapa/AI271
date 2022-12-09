@@ -67,8 +67,8 @@ class SlsSolver(object):
         self.world = world
         self.n = world.len()
         self.city_nodes = list(range(self.n))
-        self.alpha = 0.99
-        self.T = 100
+        self.alpha = 0.999
+        self.T = 1000
         self.min_T = 1e-8
         self.max_iter = 100000
 
@@ -122,9 +122,19 @@ class SlsSolver(object):
         print("Total iterations : ", iterations)
         print("Best solution over initial solution improvement: ", 100 * (initial_fitness - best_fitness) / initial_fitness)
 
+        return best_fitness
+
 world = World()
 if len(sys.argv) == 2:
     world.construct(sys.argv[1])
 else:
     world.construct()
-SlsSolver(world).solve()
+
+avg = 0
+count = 0
+for i in range(100):
+    count += 1
+    avg = avg*(count-1) + SlsSolver(world).solve()
+    avg /= count
+
+print("Average best tour cost : ", avg)
